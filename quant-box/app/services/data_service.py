@@ -21,6 +21,10 @@ class DataService:
         return df
 
     def persist_metadata(self, db: Session, source: str, symbol: str, timeframe: str, parquet_path: str) -> DataAsset:
+        existing = db.query(DataAsset).filter(DataAsset.parquet_path == parquet_path).first()
+        if existing:
+            return existing
+
         df = pd.read_parquet(parquet_path)
         asset = DataAsset(
             source=source,

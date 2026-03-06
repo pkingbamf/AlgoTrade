@@ -57,16 +57,16 @@ Deliverables:
 Goal: Build robust strategy testing.
 
 Tasks:
-- [ ] Backtesting engine
-- [ ] Fee model
-- [ ] Slippage model
-- [ ] Portfolio simulation
-- [ ] Performance metrics
-- [ ] Walk-forward validation
-- [ ] Train/test split logic
-- [ ] Monte Carlo trade resampling
-- [ ] Parameter sensitivity analysis
-- [ ] Strategy promotion scoring
+- [x] Backtesting engine
+- [x] Fee model
+- [x] Slippage model
+- [x] Portfolio simulation
+- [x] Performance metrics
+- [x] Walk-forward validation
+- [x] Train/test split logic
+- [x] Monte Carlo trade resampling
+- [x] Parameter sensitivity analysis
+- [x] Strategy promotion scoring
 
 Deliverables:
 - Complete backtest report

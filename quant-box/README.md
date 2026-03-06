@@ -92,8 +92,9 @@ YAML keys:
 3. Walk-forward windows
 4. Parameter sweep via spec variants
 5. Monte Carlo trade-sequence bootstrap
-6. Threshold gates (trades, Sharpe, drawdown, profit factor, turnover, stability)
-7. Promotion score + decision reason
+6. Parameter sensitivity analysis
+7. Threshold gates (trades, Sharpe, drawdown, profit factor, turnover, stability)
+8. Promotion score + decision reason
 
 ## Testing
 

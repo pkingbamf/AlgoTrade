@@ -1,7 +1,7 @@
 # Project Status
 
 ## Current Phase
-Phase 2 — Research Engine (Complete)
+Phase 3 — Backtesting & Validation (Complete)
 
 ---
 
@@ -31,20 +31,30 @@ Completed:
 - experiment runner (`ExperimentService`)
 - experiment results persistence (`ExperimentRun`, `ExperimentResult`)
 
+## Phase 3 — Backtesting & Validation
+Completed:
+- vectorized backtesting engine with fees and slippage
+- portfolio-level metrics (CAGR, Sharpe, Sortino, Calmar, drawdown, PF, turnover, exposure, expectancy)
+- train/validation/test split logic
+- walk-forward evaluation windows
+- trade-sequence Monte Carlo resampling
+- parameter sensitivity scoring (`parameter_stability`)
+- promotion scoring integration
+- complete report payload builder (`build_backtest_report`)
+
 ---
 
 # Current Work
 
-Phase 2 closeout hardening and tests.
+Phase 3 closeout and readiness for paper-trading system implementation.
 
 ---
 
 # Decisions
 
-- PostgreSQL for metadata and experiment persistence
-- parquet as research data store for fast iteration
-- pydantic schema validation at spec load/persist boundaries
-- parameter sweep + experiment ranking by Sharpe for MVP
+- promotion-score ranking is used as primary experiment ranking signal in Phase 3
+- OOS metrics and stability are persisted per variant
+- report payload includes IS/OOS metrics + Monte Carlo + sensitivity for auditability
 
 ---
 
@@ -56,4 +66,4 @@ Phase 2 closeout hardening and tests.
 
 # Next Phase
 
-Phase 3 — Backtesting & Validation
+Phase 4 — Paper Trading System

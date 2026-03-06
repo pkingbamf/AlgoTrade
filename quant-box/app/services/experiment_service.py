@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from app.models import DataAsset, ExperimentResult, ExperimentRun, StrategySpec
 from app.services.research_service import ResearchService
 from backtests.engines.simple_engine import BacktestConfig
+from backtests.reports.report_builder import build_backtest_report
+from backtests.validation.sensitivity import parameter_stability
 from research.experiments.sweep import ParameterSweepEngine
 
 
@@ -18,6 +20,10 @@ class ExperimentService:
 
     def register_dataset(self, db: Session, source: str, symbol: str, timeframe: str, parquet_path: str) -> DataAsset:
         path = Path(parquet_path)
+        existing = db.query(DataAsset).filter(DataAsset.parquet_path == str(path)).first()
+        if existing:
+            return existing
+
         df = pd.read_parquet(path)
         asset = DataAsset(
             source=source,
@@ -46,11 +52,37 @@ class ExperimentService:
         scored: list[dict] = []
         for variant in variants:
             params = variant["params"]
-            result = self.research_service.run_backtest(df, family=spec["family"], config=cfg, params=params)
-            metrics = result["metrics"]
-            scored.append({"strategy_id": strategy_id, "params": params, "metrics": metrics, "score": metrics.get("sharpe", 0.0)})
+            validation = self.research_service.run_validation_pipeline(df, family=spec["family"], config=cfg, params=params)
+            oos_metrics = validation["oos"]["metrics"]
+            score = float(validation["promotion_score"])
+            report = build_backtest_report(
+                strategy_id=strategy_id,
+                parameters=params,
+                in_sample=validation["train"],
+                out_of_sample=validation["oos"],
+                walk_forward_sharpes=validation["walk_forward_sharpes"],
+                monte_carlo=validation["monte_carlo"],
+                sensitivity={},
+                promotion_score=score,
+                promotion_detail=validation["promotion_detail"],
+            )
+            scored.append(
+                {
+                    "strategy_id": strategy_id,
+                    "params": params,
+                    "metrics": oos_metrics,
+                    "validation": {
+                        "stability_score": validation["stability_score"],
+                        "walk_forward_sharpes": validation["walk_forward_sharpes"],
+                        "oos_degradation": validation["oos_degradation"],
+                    },
+                    "report": report,
+                    "score": score,
+                }
+            )
 
         scored.sort(key=lambda x: x["score"], reverse=True)
+        sensitivity = parameter_stability(scored, metric="sharpe")
 
         run = ExperimentRun(
             strategy_id=strategy_id,
@@ -59,8 +91,9 @@ class ExperimentService:
             parameter_grid_size=len(variants),
             status="completed",
             summary={
-                "best_sharpe": scored[0]["metrics"].get("sharpe", 0.0) if scored else 0.0,
+                "best_promotion_score": scored[0]["score"] if scored else 0.0,
                 "best_params": scored[0]["params"] if scored else {},
+                "sensitivity": sensitivity,
             },
         )
         db.add(run)
@@ -72,11 +105,23 @@ class ExperimentService:
                     experiment_run_id=run.id,
                     strategy_id=strategy_id,
                     parameters=row["params"],
-                    metrics=row["metrics"],
+                    metrics={
+                        **row["metrics"],
+                        "promotion_score": row["score"],
+                        "stability_score": row["validation"]["stability_score"],
+                        "oos_degradation": row["validation"]["oos_degradation"],
+                        "sensitivity_score": sensitivity["stability_score"],
+                    },
                     rank=idx,
                 )
             )
 
         db.commit()
         db.refresh(run)
-        return {"run_id": run.id, "strategy_id": strategy_id, "grid_size": len(variants), "top_results": scored[:top_k]}
+        return {
+            "run_id": run.id,
+            "strategy_id": strategy_id,
+            "grid_size": len(variants),
+            "sensitivity": sensitivity,
+            "top_results": scored[:top_k],
+        }
