@@ -1,0 +1,10 @@
+strategy_id: trend_break_pullback_2
+family: trend_following
+asset_universe: [BTCUSDT]
+timeframe: 4h
+indicators: {ema: 50, atr: 14}
+entry_rules: ["close > ema", "pullback <= 1 atr"]
+exit_rules: ["close < ema"]
+risk_rules: {stop_loss_pct: 0.04, vol_target: 0.2}
+parameter_ranges: {ema: [30, 50, 80], atr_mult: [1.0, 1.5, 2.0]}
+notes: continuation trend
