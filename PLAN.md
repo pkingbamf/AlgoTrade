@@ -151,13 +151,13 @@ Deliverables:
 Goal: Human interface.
 
 Tasks:
-- [ ] Overview page
-- [ ] Strategy library page
-- [ ] Backtest viewer
-- [ ] Rankings page
-- [ ] Paper trading monitor
-- [ ] Risk monitor
-- [ ] System health page
+- [x] Overview page
+- [x] Strategy library page
+- [x] Backtest viewer
+- [x] Rankings page
+- [x] Paper trading monitor
+- [x] Risk monitor
+- [x] System health page
 
 Deliverables:
 - Working UI dashboard

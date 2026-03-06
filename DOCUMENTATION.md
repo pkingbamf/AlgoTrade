@@ -1,7 +1,7 @@
 # Project Status
 
 ## Current Phase
-Phase 7 — API (Complete)
+Phase 8 — Dashboard (Complete)
 
 ---
 
@@ -33,26 +33,30 @@ Completed:
 
 ## Phase 7 — API
 Completed:
-- FastAPI backend initialized and routed
-- strategy endpoints (`/strategy-specs`, `/strategies`, `/strategies/{id}`)
-- backtest endpoints (`/backtests/run`, `/backtests/{id}`, `/backtests/{id}/report`)
-- rankings/promotions endpoints (`/rankings`, `/promotions`)
-- paper trading endpoints (`/paper/deployments`, `/paper/orders`, `/paper/positions`, `/paper/pnl`, `/paper/portfolio-monitor`, `/paper/reconcile/{strategy_id}`)
-- risk endpoints (`/risk/state`, `/risk/limits`, `/risk/kill-switch/{active}`, `/risk/disable/{strategy_id}`, `/risk/enable/{strategy_id}`)
-- metrics endpoint (`/metrics`) and health endpoint (`/health`)
+- full REST coverage for strategy, backtest, ranking, promotions, paper, risk, metrics, and health
+
+## Phase 8 — Dashboard
+Completed:
+- overview page (`/dashboard/overview`)
+- strategy library page (`/dashboard/strategy-library`)
+- backtest viewer page (`/dashboard/backtest-runs`)
+- rankings page (`/dashboard/rankings`)
+- paper trading monitor page (`/dashboard/paper-trading`)
+- risk monitor page (`/dashboard/risk-monitor`)
+- system health page (`/dashboard/system-health`)
 
 ---
 
 # Current Work
 
-Phase 7 validation complete; preparing for Phase 8 dashboard expansion.
+Phase 8 validation complete; preparing for Phase 9 testing and hardening.
 
 ---
 
 # Decisions
 
-- API remains sync + DB-backed for MVP simplicity
-- risk and monitoring are integrated into API flow at order and health/metrics boundaries
+- dashboard remains lightweight server-rendered HTML for MVP velocity
+- pages link directly to operational API endpoints to keep UX simple and transparent
 
 ---
 
@@ -64,4 +68,4 @@ Phase 7 validation complete; preparing for Phase 8 dashboard expansion.
 
 # Next Phase
 
-Phase 8 — Dashboard
+Phase 9 — Testing & Hardening

@@ -123,3 +123,13 @@ pytest -q
 - health details include heartbeat, data freshness, running jobs, and alert counts
 - metrics endpoint includes system counters and service status map
 - stale-data detection emits alert-hook events visible in system logs
+
+
+## Dashboard pages
+- `/dashboard/overview`
+- `/dashboard/strategy-library`
+- `/dashboard/backtest-runs`
+- `/dashboard/rankings`
+- `/dashboard/paper-trading`
+- `/dashboard/risk-monitor`
+- `/dashboard/system-health`

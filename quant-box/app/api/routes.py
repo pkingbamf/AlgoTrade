@@ -330,3 +330,38 @@ def strategy_detail(strategy_id: str, db: Session = Depends(get_db)):
 @router.get("/", response_class=HTMLResponse)
 def dashboard_overview():
     return HTMLResponse(Path("frontend/templates/index.html").read_text())
+
+
+@router.get("/dashboard/overview", response_class=HTMLResponse)
+def dashboard_overview_page():
+    return HTMLResponse(Path("frontend/templates/index.html").read_text())
+
+
+@router.get("/dashboard/strategy-library", response_class=HTMLResponse)
+def dashboard_strategy_library():
+    return HTMLResponse(Path("frontend/templates/strategy_library.html").read_text())
+
+
+@router.get("/dashboard/backtest-runs", response_class=HTMLResponse)
+def dashboard_backtest_runs():
+    return HTMLResponse(Path("frontend/templates/backtest_runs.html").read_text())
+
+
+@router.get("/dashboard/rankings", response_class=HTMLResponse)
+def dashboard_rankings():
+    return HTMLResponse(Path("frontend/templates/rankings.html").read_text())
+
+
+@router.get("/dashboard/paper-trading", response_class=HTMLResponse)
+def dashboard_paper_trading():
+    return HTMLResponse(Path("frontend/templates/paper_trading.html").read_text())
+
+
+@router.get("/dashboard/risk-monitor", response_class=HTMLResponse)
+def dashboard_risk_monitor():
+    return HTMLResponse(Path("frontend/templates/risk_monitor.html").read_text())
+
+
+@router.get("/dashboard/system-health", response_class=HTMLResponse)
+def dashboard_system_health():
+    return HTMLResponse(Path("frontend/templates/system_health.html").read_text())
