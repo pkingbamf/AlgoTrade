@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Quant Box Dashboard</title>
+    <style>
+      body { font-family: Arial; margin: 2rem; background: #f9fafb; }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+      .card { border: 1px solid #ddd; border-radius: 8px; padding: 1rem; background: #fff; }
+      h1 { margin-bottom: 0.2rem; }
+      ul { margin: 0.2rem 0 0 1rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Quant Hedge Fund in a Box</h1>
+    <p>Research-first MVP status dashboard (paper trading only).</p>
+    <div class="grid">
+      <div class="card"><h2>Overview</h2><ul><li>Total strategies: /strategies</li><li>Promotions: /promotions</li><li>Paper PnL: /paper/pnl</li><li>System health: /health</li></ul></div>
+      <div class="card"><h2>Strategy Library</h2><ul><li>/strategy-specs</li><li>/strategies</li></ul></div>
+      <div class="card"><h2>Backtest Runs</h2><ul><li>POST /backtests/run</li><li>GET /backtests/{id}</li><li>GET /backtests/{id}/report</li></ul></div>
+      <div class="card"><h2>Rankings + Promotions</h2><ul><li>/rankings</li><li>/promotions</li></ul></div>
+      <div class="card"><h2>Paper Trading Monitor</h2><ul><li>/paper/orders</li><li>/paper/positions</li><li>/paper/pnl</li></ul></div>
+      <div class="card"><h2>Risk + Health</h2><ul><li>/risk/state</li><li>/risk/limits</li><li>/system/logs</li></ul></div>
+    </div>
+  </body>
+</html>

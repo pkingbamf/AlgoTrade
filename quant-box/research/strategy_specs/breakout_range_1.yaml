@@ -1,0 +1,10 @@
+strategy_id: breakout_range_1
+family: breakout
+asset_universe: [BTCUSDT, ETHUSDT]
+timeframe: 1h
+indicators: {donchian: 20}
+entry_rules: ["close > donchian_high"]
+exit_rules: ["close < donchian_mid"]
+risk_rules: {stop_loss_pct: 0.03, trailing_stop_pct: 0.02}
+parameter_ranges: {donchian: [10, 20, 55], trail: [0.01, 0.02, 0.03]}
+notes: volatility expansion

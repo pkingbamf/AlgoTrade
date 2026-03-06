@@ -1,0 +1,10 @@
+strategy_id: pairs_btc_eth_1
+family: pairs
+asset_universe: [BTCUSDT, ETHUSDT]
+timeframe: 1h
+indicators: {spread_z: 60}
+entry_rules: ["spread_z > 2 or spread_z < -2"]
+exit_rules: ["abs(spread_z) < 0.5"]
+risk_rules: {stop_loss_pct: 0.02, dollar_neutral: true}
+parameter_ranges: {z_entry: [1.5, 2.0, 2.5], z_exit: [0.2, 0.5, 0.8]}
+notes: relative value mean reversion

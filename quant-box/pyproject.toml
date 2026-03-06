@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quant-box"
+version = "0.1.0"
+description = "Quant Hedge Fund in a Box MVP"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.30.0",
+  "pydantic>=2.8.0",
+  "pydantic-settings>=2.4.0",
+  "sqlalchemy>=2.0.32",
+  "alembic>=1.13.2",
+  "psycopg2-binary>=2.9.9",
+  "pandas>=2.2.2",
+  "numpy>=1.26.4",
+  "pyyaml>=6.0.2",
+  "pyarrow>=17.0.0",
+  "httpx>=0.27.0",
+  "jinja2>=3.1.4",
+  "python-multipart>=0.0.9",
+  "prometheus-client>=0.20.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.2",
+  "pytest-cov>=5.0.0",
+  "ruff>=0.6.3",
+  "mypy>=1.11.2",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*", "research*", "backtests*", "execution*", "risk*", "monitoring*"]
