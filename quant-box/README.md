@@ -68,7 +68,7 @@ This produces parquet research data, registers metadata in `data_assets`, and pe
 - `/backtests/run`, `/backtests/{id}`, `/backtests/{id}/report`
 - `/rankings`, `/promotions`
 - `/paper/deployments` (GET/POST), `/paper/orders` (GET/POST), `/paper/positions`, `/paper/pnl`, `/paper/portfolio-monitor`, `/paper/reconcile/{strategy_id}`
-- `/risk/state`, `/risk/limits`
+- `/risk/state`, `/risk/limits`, `/risk/kill-switch/{active}`, `/risk/disable/{strategy_id}`, `/risk/enable/{strategy_id}`
 - `/system/logs`
 
 ## Strategy spec format
@@ -108,3 +108,12 @@ pytest -q
 - persistent metrics exporter and alert integrations
 - full frontend UX beyond lightweight dashboard page
 - Alembic migration generation automation
+
+
+## Risk controls include
+- max position sizing
+- strategy family allocation caps
+- asset exposure caps
+- daily loss and drawdown kill-switch triggers
+- strategy disable/enable controls
+- volatility-based size reduction

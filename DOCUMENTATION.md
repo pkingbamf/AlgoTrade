@@ -1,7 +1,7 @@
 # Project Status
 
 ## Current Phase
-Phase 4 — Paper Trading System (Complete)
+Phase 5 — Risk Management (Complete)
 
 ---
 
@@ -34,44 +34,48 @@ Completed:
 ## Phase 3 — Backtesting & Validation
 Completed:
 - vectorized backtesting engine with fees and slippage
-- portfolio-level metrics (CAGR, Sharpe, Sortino, Calmar, drawdown, PF, turnover, exposure, expectancy)
-- train/validation/test split logic
-- walk-forward evaluation windows
-- trade-sequence Monte Carlo resampling
-- parameter sensitivity scoring (`parameter_stability`)
-- promotion scoring integration
-- complete report payload builder (`build_backtest_report`)
+- portfolio-level metrics and report payload builder
+- walk-forward + train/test + Monte Carlo + parameter sensitivity
 
 ## Phase 4 — Paper Trading System
 Completed:
-- paper broker interface + order execution simulator
-- position tracking and PnL snapshot
-- strategy deployment registry (`StrategyDeployment`)
-- order audit logs persisted (`AuditLog`)
-- paper portfolio monitor + position reconciliation service
+- paper broker interface + execution simulator
+- deployment registry + audit logs
+- portfolio monitor + reconciliation
+
+## Phase 5 — Risk Management
+Completed:
+- max position size enforcement
+- strategy-family allocation limit checks
+- asset exposure cap checks
+- max daily loss and max drawdown triggers
+- global kill switch controls
+- strategy-level disable/enable controls
+- volatility reduction sizing multiplier
+- risk endpoints integrated into API order flow
 
 ---
 
 # Current Work
 
-Phase 4 validation complete; preparing to execute Phase 5 risk management enhancements.
+Phase 5 validation complete; preparing for Phase 6 monitoring and observability enhancements.
 
 ---
 
 # Decisions
 
-- in-memory broker remains the execution state source for MVP speed
-- DB persistence captures deployments/orders/positions/audit events for traceability
-- reconciliation endpoint compares broker state vs persisted state and logs mismatches
+- risk checks are centralized in `RiskEngine` and evaluated pre-order
+- daily loss/drawdown breaches trigger kill switch activation
+- volatility is handled via sizing reduction (not immediate rejection)
 
 ---
 
 # Known Issues
 
-- Environment dependency availability may impact full local `pytest` execution if packages are not installed.
+- Full test suite still requires dependencies not present in minimal environment runners.
 
 ---
 
 # Next Phase
 
-Phase 5 — Risk Management
+Phase 6 — Monitoring & Observability

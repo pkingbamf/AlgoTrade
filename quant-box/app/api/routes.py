@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import AuditLog, BacktestRun, PromotionDecision, StrategyDeployment, StrategySpec, ValidationResult
+from app.models import AuditLog, BacktestRun, PaperPosition, PromotionDecision, StrategyDeployment, StrategySpec, ValidationResult
 from app.schemas.common import HealthResponse
 from app.schemas.strategy import BacktestRunRequest, DeployStrategyRequest, PaperOrderRequest, PromotionResponse, StrategySpecCreate
 from app.services.paper_trading_service import PaperTradingService
@@ -25,6 +25,29 @@ promotion_service = PromotionService()
 paper_broker = PaperBroker()
 paper_service = PaperTradingService(paper_broker)
 risk_engine = RiskEngine(RiskLimits())
+
+START_EQUITY = 100000.0
+peak_equity = START_EQUITY
+
+
+def _strategy_family_allocation_pct(db: Session, strategy_id: str, equity: float) -> float:
+    spec = db.query(StrategySpec).filter(StrategySpec.strategy_id == strategy_id).first()
+    if not spec:
+        return 0.0
+    family_ids = [r.strategy_id for r in db.query(StrategySpec).filter(StrategySpec.family == spec.family).all()]
+    if not family_ids:
+        return 0.0
+    rows = db.query(PaperPosition).filter(PaperPosition.strategy_id.in_(family_ids)).all()
+    notional = sum(abs(r.quantity * r.mark_price) for r in rows)
+    return float(notional / max(equity, 1e-9))
+
+
+def _asset_exposure_pct(symbol: str, equity: float) -> float:
+    pos = paper_broker.positions.get(symbol)
+    if not pos:
+        return 0.0
+    notional = abs(pos.quantity * pos.avg_price)
+    return float(notional / max(equity, 1e-9))
 
 
 @router.get("/health", response_model=HealthResponse)
@@ -157,10 +180,35 @@ def list_deployments(db: Session = Depends(get_db)):
 
 @router.post("/paper/orders")
 def place_paper_order(req: PaperOrderRequest, db: Session = Depends(get_db)):
-    ok, reason = risk_engine.check_order(req.quantity * req.price, equity=100000, strategy_id=req.strategy_id, rolling_vol=0.2)
+    global peak_equity
+
+    monitor = paper_service.portfolio_monitor()
+    current_equity = START_EQUITY + monitor["unrealized_pnl"]
+    peak_equity = max(peak_equity, current_equity)
+
+    daily_loss_pct = abs(min(monitor["unrealized_pnl"], 0.0)) / max(START_EQUITY, 1e-9)
+    drawdown_pct = max(0.0, (peak_equity - current_equity) / max(peak_equity, 1e-9))
+
+    context = {
+        "daily_loss_pct": daily_loss_pct,
+        "drawdown_pct": drawdown_pct,
+        "strategy_family_allocation_pct": _strategy_family_allocation_pct(db, req.strategy_id, START_EQUITY),
+        "asset_exposure_pct": _asset_exposure_pct(req.symbol, START_EQUITY),
+    }
+
+    order_notional = req.quantity * req.price
+    ok, reason, multiplier = risk_engine.check_order(
+        order_notional=order_notional,
+        equity=START_EQUITY,
+        strategy_id=req.strategy_id,
+        rolling_vol=0.2,
+        context=context,
+    )
     if not ok:
         raise HTTPException(400, f"risk rejected: {reason}")
-    return paper_service.execute_order(db, req.strategy_id, req.symbol, req.side, req.quantity, req.price)
+
+    adjusted_qty = req.quantity * multiplier
+    return paper_service.execute_order(db, req.strategy_id, req.symbol, req.side, adjusted_qty, req.price)
 
 
 @router.get("/paper/orders")
@@ -188,9 +236,31 @@ def paper_reconcile(strategy_id: str, db: Session = Depends(get_db)):
     return paper_service.reconcile_positions(db, strategy_id)
 
 
+@router.post("/risk/kill-switch/{active}")
+def set_kill_switch(active: bool):
+    risk_engine.set_kill_switch(active)
+    return {"kill_switch": risk_engine.kill_switch}
+
+
+@router.post("/risk/disable/{strategy_id}")
+def disable_strategy(strategy_id: str):
+    risk_engine.disable_strategy(strategy_id)
+    return {"disabled_strategies": list(risk_engine.strategy_disabled)}
+
+
+@router.post("/risk/enable/{strategy_id}")
+def enable_strategy(strategy_id: str):
+    risk_engine.enable_strategy(strategy_id)
+    return {"disabled_strategies": list(risk_engine.strategy_disabled)}
+
+
 @router.get("/risk/state")
 def risk_state():
-    return {"kill_switch": risk_engine.kill_switch, "disabled_strategies": list(risk_engine.strategy_disabled)}
+    return {
+        "kill_switch": risk_engine.kill_switch,
+        "disabled_strategies": list(risk_engine.strategy_disabled),
+        "limits": vars(risk_engine.limits),
+    }
 
 
 @router.get("/risk/limits")

@@ -97,14 +97,14 @@ Deliverables:
 Goal: Prevent catastrophic losses.
 
 Tasks:
-- [ ] Max position sizing
-- [ ] Strategy allocation limits
-- [ ] Portfolio exposure limits
-- [ ] Daily loss limit
-- [ ] Max drawdown control
-- [ ] Kill switch
-- [ ] Strategy disable control
-- [ ] Volatility targeting
+- [x] Max position sizing
+- [x] Strategy allocation limits
+- [x] Portfolio exposure limits
+- [x] Daily loss limit
+- [x] Max drawdown control
+- [x] Kill switch
+- [x] Strategy disable control
+- [x] Volatility targeting
 
 Deliverables:
 - Risk engine integrated with paper trading
