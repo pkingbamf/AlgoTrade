@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.db.session import get_db
 from app.models import BacktestRun, PromotionDecision, StrategySpec, ValidationResult
 from app.schemas.common import HealthResponse
@@ -22,7 +23,16 @@ strategy_service = StrategyService()
 research_service = ResearchService()
 promotion_service = PromotionService()
 paper_broker = PaperBroker()
-risk_engine = RiskEngine(RiskLimits())
+settings = get_settings()
+risk_engine = RiskEngine(
+    RiskLimits(
+        max_position_pct=settings.risk_max_position_pct,
+        max_strategy_family_pct=settings.risk_max_family_allocation_pct,
+        max_daily_loss_pct=settings.risk_max_daily_loss_pct,
+        max_portfolio_drawdown_pct=settings.risk_max_portfolio_dd_pct,
+        vol_reduction_threshold=settings.vol_reduction_threshold,
+    )
+)
 
 
 @router.get("/health", response_model=HealthResponse)

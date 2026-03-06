@@ -28,7 +28,11 @@ class SimpleBacktestEngine:
         gross_pos = net[net > 0].sum()
         gross_neg = abs(net[net < 0].sum()) + 1e-9
         sharpe = np.sqrt(252) * net.mean() / (net.std() + 1e-9)
-        sortino = np.sqrt(252) * net.mean() / (net[net < 0].std() + 1e-9)
+        downside = net[net < 0]
+        downside_std = downside.std()
+        if np.isnan(downside_std):
+            downside_std = 0.0
+        sortino = np.sqrt(252) * net.mean() / (downside_std + 1e-9)
         cagr = (equity.iloc[-1] / config.initial_capital) ** (252 / max(len(equity), 1)) - 1
         max_dd = abs(dd.min())
         metrics = {

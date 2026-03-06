@@ -2,11 +2,13 @@ from pathlib import Path
 
 from sqlalchemy.exc import IntegrityError
 
+from app.db.init_db import init_db
 from app.db.session import SessionLocal
 from app.services.strategy_service import StrategyService
 
 
 if __name__ == "__main__":
+    init_db()
     service = StrategyService()
     db = SessionLocal()
     try:
