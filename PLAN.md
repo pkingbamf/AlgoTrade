@@ -133,13 +133,13 @@ Deliverables:
 Goal: Programmatic access to platform.
 
 Tasks:
-- [ ] FastAPI backend
-- [ ] Strategy endpoints
-- [ ] Backtest endpoints
-- [ ] Rankings endpoint
-- [ ] Paper trading endpoints
-- [ ] Risk state endpoint
-- [ ] Metrics endpoint
+- [x] FastAPI backend
+- [x] Strategy endpoints
+- [x] Backtest endpoints
+- [x] Rankings endpoint
+- [x] Paper trading endpoints
+- [x] Risk state endpoint
+- [x] Metrics endpoint
 
 Deliverables:
 - Fully functional REST API

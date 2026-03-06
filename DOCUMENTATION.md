@@ -1,7 +1,7 @@
 # Project Status
 
 ## Current Phase
-Phase 6 — Monitoring & Observability (Complete)
+Phase 7 — API (Complete)
 
 ---
 
@@ -9,62 +9,59 @@ Phase 6 — Monitoring & Observability (Complete)
 
 ## Phase 1 — Foundation
 Completed:
-- repo scaffold
-- Docker configuration
-- PostgreSQL setup
-- environment handling
-- logging
-- base architecture
+- repo scaffold, Docker, env config, DB base models, logging
 
 ## Phase 2 — Research Engine
 Completed:
-- market data ingestion + parquet metadata persistence
-- spec schema validation + parameter sweep + experiments
+- ingestion, validation, spec schema, sweep engine, experiment persistence
 
 ## Phase 3 — Backtesting & Validation
 Completed:
-- backtest metrics and report builder
-- walk-forward, Monte Carlo, sensitivity analysis
+- backtesting metrics, walk-forward, Monte Carlo, sensitivity, reports
 
 ## Phase 4 — Paper Trading System
 Completed:
-- paper execution, deployments, reconciliation, audit logs
+- paper execution, deployment registry, audit logging, reconciliation
 
 ## Phase 5 — Risk Management
 Completed:
-- hard limits, kill-switches, disable controls, volatility sizing
+- hard pre-trade limits, kill-switch and strategy disable controls, vol sizing reduction
 
 ## Phase 6 — Monitoring & Observability
 Completed:
-- structured monitoring events through `MonitoringService`
-- enriched health checks with data freshness and alert count
-- alert hooks for stale-data detection
-- system metrics aggregation (`/metrics`)
-- job monitoring (`/system/jobs`)
-- data freshness endpoint (`/system/data-freshness`)
+- health metadata, system metrics, stale-data detection, job tracking, alert hooks
+
+## Phase 7 — API
+Completed:
+- FastAPI backend initialized and routed
+- strategy endpoints (`/strategy-specs`, `/strategies`, `/strategies/{id}`)
+- backtest endpoints (`/backtests/run`, `/backtests/{id}`, `/backtests/{id}/report`)
+- rankings/promotions endpoints (`/rankings`, `/promotions`)
+- paper trading endpoints (`/paper/deployments`, `/paper/orders`, `/paper/positions`, `/paper/pnl`, `/paper/portfolio-monitor`, `/paper/reconcile/{strategy_id}`)
+- risk endpoints (`/risk/state`, `/risk/limits`, `/risk/kill-switch/{active}`, `/risk/disable/{strategy_id}`, `/risk/enable/{strategy_id}`)
+- metrics endpoint (`/metrics`) and health endpoint (`/health`)
 
 ---
 
 # Current Work
 
-Phase 6 validation complete; preparing for Phase 7 API hardening and schema coverage.
+Phase 7 validation complete; preparing for Phase 8 dashboard expansion.
 
 ---
 
 # Decisions
 
-- observability for MVP uses lightweight in-memory monitoring state
-- stale-data alerts are generated through centralized alert hook
-- health endpoint now includes freshness, job, and alert metadata
+- API remains sync + DB-backed for MVP simplicity
+- risk and monitoring are integrated into API flow at order and health/metrics boundaries
 
 ---
 
 # Known Issues
 
-- Full test suite still requires dependencies not present in minimal environment runners.
+- Full pytest still depends on runtime libraries unavailable in minimal runner environments.
 
 ---
 
 # Next Phase
 
-Phase 7 — API
+Phase 8 — Dashboard
