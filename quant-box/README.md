@@ -49,6 +49,18 @@ Open:
 docker compose up --build
 ```
 
+## Phase 2 research workflow
+
+```bash
+python scripts/generate_sample_data.py
+python scripts/ingest_and_register_data.py
+python scripts/load_strategy_specs.py
+python scripts/run_experiment.py
+```
+
+This produces parquet research data, registers metadata in `data_assets`, and persists sweep runs to `experiment_runs` and `experiment_results`.
+
+
 ## API endpoints included
 - `/health`, `/metrics`
 - `/strategies`, `/strategies/{id}`

@@ -1,6 +1,9 @@
 from app.models.entities import (
     AuditLog,
     BacktestRun,
+    DataAsset,
+    ExperimentResult,
+    ExperimentRun,
     PaperOrder,
     PaperPosition,
     PromotionDecision,
@@ -16,4 +19,7 @@ __all__ = [
     "PaperOrder",
     "PaperPosition",
     "AuditLog",
+    "DataAsset",
+    "ExperimentRun",
+    "ExperimentResult",
 ]

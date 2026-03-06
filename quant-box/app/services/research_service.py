@@ -10,31 +10,52 @@ class ResearchService:
     def __init__(self):
         self.engine = SimpleBacktestEngine()
 
-    def signal_from_family(self, df: pd.DataFrame, family: str) -> pd.Series:
+    def signal_from_spec(self, df: pd.DataFrame, family: str, params: dict[str, float | int] | None = None) -> pd.Series:
+        params = params or {}
         feat = add_basic_features(df)
+
         if family == "trend_following":
-            return (feat["ma_fast"] > feat["ma_slow"]).astype(float)
+            fast = int(params.get("ma_fast", 10))
+            slow = int(params.get("ma_slow", 30))
+            ma_fast = feat["close"].rolling(fast).mean().bfill()
+            ma_slow = feat["close"].rolling(slow).mean().bfill()
+            return (ma_fast > ma_slow).astype(float)
+
         if family == "mean_reversion":
-            return (feat["close"] < feat["ma_fast"] * 0.98).astype(float)
-        if family == "breakout":
-            rolling_high = feat["high"].rolling(20).max().bfill()
-            return (feat["close"] > rolling_high.shift(1).bfill()).astype(float)
-        if family == "pairs":
+            z_threshold = float(params.get("z_entry", -1.8))
             z = (feat["close"] - feat["ma_slow"]) / (feat["vol_20"] + 1e-9)
-            return (z < -1.0).astype(float)
+            return (z < z_threshold).astype(float)
+
+        if family == "breakout":
+            lookback = int(params.get("donchian", params.get("range", 20)))
+            rolling_high = feat["high"].rolling(lookback).max().bfill()
+            return (feat["close"] > rolling_high.shift(1).bfill()).astype(float)
+
+        if family == "pairs":
+            z_threshold = float(params.get("z_entry", -1.0))
+            z = (feat["close"] - feat["ma_slow"]) / (feat["vol_20"] + 1e-9)
+            return (z < z_threshold).astype(float)
+
         return pd.Series(0.0, index=df.index)
 
-    def run_validation_pipeline(self, df: pd.DataFrame, family: str, config: BacktestConfig) -> dict:
+    def run_backtest(self, df: pd.DataFrame, family: str, config: BacktestConfig, params: dict[str, float | int] | None = None) -> dict:
+        signal = self.signal_from_spec(df, family=family, params=params)
+        return self.engine.run(df, signal, config)
+
+    def run_validation_pipeline(
+        self,
+        df: pd.DataFrame,
+        family: str,
+        config: BacktestConfig,
+        params: dict[str, float | int] | None = None,
+    ) -> dict:
         splits = split_periods(df)
-        train_signal = self.signal_from_family(splits["train"], family)
-        oos_signal = self.signal_from_family(splits["test"], family)
-        train_run = self.engine.run(splits["train"], train_signal, config)
-        oos_run = self.engine.run(splits["test"], oos_signal, config)
+        train_run = self.run_backtest(splits["train"], family, config, params)
+        oos_run = self.run_backtest(splits["test"], family, config, params)
 
         wf = []
         for _, te in walk_forward_windows(df):
-            signal = self.signal_from_family(te, family)
-            wf.append(self.engine.run(te, signal, config)["metrics"]["sharpe"])
+            wf.append(self.run_backtest(te, family, config, params)["metrics"]["sharpe"])
 
         wf_series = pd.Series(wf, dtype=float) if wf else pd.Series([0.0], dtype=float)
         stability = max(0.0, 1.0 - float(wf_series.std()))

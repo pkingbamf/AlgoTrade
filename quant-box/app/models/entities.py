@@ -6,6 +6,45 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.db.session import Base
 
 
+class DataAsset(Base):
+    __tablename__ = "data_assets"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    source: Mapped[str] = mapped_column(String(64), index=True)
+    symbol: Mapped[str] = mapped_column(String(32), index=True)
+    timeframe: Mapped[str] = mapped_column(String(16), index=True)
+    parquet_path: Mapped[str] = mapped_column(String(256), unique=True)
+    start_ts: Mapped[str] = mapped_column(String(64))
+    end_ts: Mapped[str] = mapped_column(String(64))
+    row_count: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class ExperimentRun(Base):
+    __tablename__ = "experiment_runs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    strategy_id: Mapped[str] = mapped_column(String(128), index=True)
+    family: Mapped[str] = mapped_column(String(64), index=True)
+    dataset_path: Mapped[str] = mapped_column(String(256))
+    parameter_grid_size: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(24), default="completed")
+    summary: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class ExperimentResult(Base):
+    __tablename__ = "experiment_results"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    experiment_run_id: Mapped[int] = mapped_column(Integer, index=True)
+    strategy_id: Mapped[str] = mapped_column(String(128), index=True)
+    parameters: Mapped[dict] = mapped_column(JSON)
+    metrics: Mapped[dict] = mapped_column(JSON)
+    rank: Mapped[int] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
 class StrategySpec(Base):
     __tablename__ = "strategy_specs"
 
