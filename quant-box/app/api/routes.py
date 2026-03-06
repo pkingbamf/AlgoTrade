@@ -6,7 +6,7 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models import AuditLog, BacktestRun, PaperPosition, PromotionDecision, StrategyDeployment, StrategySpec, ValidationResult
+from app.models import AuditLog, BacktestRun, DataAsset, PaperPosition, PromotionDecision, StrategyDeployment, StrategySpec, ValidationResult
 from app.schemas.common import HealthResponse
 from app.schemas.strategy import BacktestRunRequest, DeployStrategyRequest, PaperOrderRequest, PromotionResponse, StrategySpecCreate
 from app.services.paper_trading_service import PaperTradingService
@@ -16,6 +16,7 @@ from app.services.strategy_service import StrategyService
 from backtests.engines.simple_engine import BacktestConfig
 from execution.paper.broker import PaperBroker
 from monitoring.health import heartbeat
+from monitoring.observability import MonitoringService
 from risk.policies import RiskEngine, RiskLimits
 
 router = APIRouter()
@@ -25,6 +26,7 @@ promotion_service = PromotionService()
 paper_broker = PaperBroker()
 paper_service = PaperTradingService(paper_broker)
 risk_engine = RiskEngine(RiskLimits())
+monitoring_service = MonitoringService()
 
 START_EQUITY = 100000.0
 peak_equity = START_EQUITY
@@ -51,17 +53,35 @@ def _asset_exposure_pct(symbol: str, equity: float) -> float:
 
 
 @router.get("/health", response_model=HealthResponse)
-def health() -> HealthResponse:
-    return HealthResponse(status="ok", db="ok", heartbeat=heartbeat())
+def health(db: Session = Depends(get_db)) -> HealthResponse:
+    latest_data = db.query(DataAsset).order_by(DataAsset.created_at.desc()).first()
+    freshness = monitoring_service.data_freshness(latest_data.end_ts if latest_data else None, stale_after_seconds=7200)
+    monitoring_service.alert_if(freshness["is_stale"], "stale_data", freshness)
+    return HealthResponse(
+        status="ok",
+        db="ok",
+        heartbeat=heartbeat(),
+        details={
+            "data_freshness": freshness,
+            "jobs_running": sum(1 for j in monitoring_service.jobs.values() if j.status == "running"),
+            "alerts_count": len(monitoring_service.alerts),
+        },
+    )
 
 
 @router.get("/metrics")
 def metrics(db: Session = Depends(get_db)):
-    return {
+    counters = {
         "strategies": db.query(StrategySpec).count(),
         "backtests": db.query(BacktestRun).count(),
         "promotions": db.query(PromotionDecision).count(),
+        "deployments": db.query(StrategyDeployment).count(),
+        "audit_logs": db.query(AuditLog).count(),
+    }
+    health_map = {"api": "ok", "db": "ok", "paper_broker": "ok"}
+    return {
         "paper": paper_service.portfolio_monitor(),
+        "system": monitoring_service.system_metrics(counters, health_map),
     }
 
 
@@ -79,12 +99,15 @@ def list_strategy_specs(db: Session = Depends(get_db)):
 
 @router.post("/backtests/run")
 def run_backtest(payload: BacktestRunRequest, db: Session = Depends(get_db)):
+    monitoring_service.record_job_start("backtest_run")
     spec = db.query(StrategySpec).filter(StrategySpec.strategy_id == payload.strategy_id).first()
     if not spec:
+        monitoring_service.record_job_end("backtest_run", "failed", {"reason": "strategy not found"})
         raise HTTPException(404, "strategy not found")
 
     path = Path("data/processed/sample_ohlcv.parquet")
     if not path.exists():
+        monitoring_service.record_job_end("backtest_run", "failed", {"reason": "sample data missing"})
         raise HTTPException(400, "sample data not found; run scripts/generate_sample_data.py")
 
     df = pd.read_parquet(path)
@@ -135,6 +158,7 @@ def run_backtest(payload: BacktestRunRequest, db: Session = Depends(get_db)):
 
     db.commit()
     db.refresh(run)
+    monitoring_service.record_job_end("backtest_run", "completed", {"strategy_id": payload.strategy_id})
     return {"run_id": run.id, "strategy_id": run.strategy_id, "metrics": run.metrics}
 
 
@@ -268,10 +292,25 @@ def risk_limits():
     return vars(risk_engine.limits)
 
 
+@router.get("/system/jobs")
+def system_jobs():
+    return {"jobs": monitoring_service.job_status()}
+
+
+@router.get("/system/data-freshness")
+def system_data_freshness(db: Session = Depends(get_db)):
+    latest_data = db.query(DataAsset).order_by(DataAsset.created_at.desc()).first()
+    freshness = monitoring_service.data_freshness(latest_data.end_ts if latest_data else None, stale_after_seconds=7200)
+    monitoring_service.alert_if(freshness["is_stale"], "stale_data", freshness)
+    return freshness
+
+
 @router.get("/system/logs")
 def system_logs(db: Session = Depends(get_db)):
     rows = db.query(AuditLog).order_by(AuditLog.id.desc()).limit(100).all()
-    return [{"component": r.component, "event_type": r.event_type, "payload": r.payload, "created_at": r.created_at.isoformat()} for r in rows]
+    db_logs = [{"component": r.component, "event_type": r.event_type, "payload": r.payload, "created_at": r.created_at.isoformat()} for r in rows]
+    alerts = [{"component": "monitoring", "event_type": a["name"], "payload": a["payload"], "created_at": a["created_at"]} for a in monitoring_service.alerts]
+    return {"logs": db_logs + alerts}
 
 
 @router.get("/strategies")

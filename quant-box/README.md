@@ -69,7 +69,7 @@ This produces parquet research data, registers metadata in `data_assets`, and pe
 - `/rankings`, `/promotions`
 - `/paper/deployments` (GET/POST), `/paper/orders` (GET/POST), `/paper/positions`, `/paper/pnl`, `/paper/portfolio-monitor`, `/paper/reconcile/{strategy_id}`
 - `/risk/state`, `/risk/limits`, `/risk/kill-switch/{active}`, `/risk/disable/{strategy_id}`, `/risk/enable/{strategy_id}`
-- `/system/logs`
+- `/system/logs`, `/system/jobs`, `/system/data-freshness`
 
 ## Strategy spec format
 YAML keys:
@@ -117,3 +117,9 @@ pytest -q
 - daily loss and drawdown kill-switch triggers
 - strategy disable/enable controls
 - volatility-based size reduction
+
+
+## Monitoring
+- health details include heartbeat, data freshness, running jobs, and alert counts
+- metrics endpoint includes system counters and service status map
+- stale-data detection emits alert-hook events visible in system logs
