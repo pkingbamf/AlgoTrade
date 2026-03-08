@@ -1,0 +1,10 @@
+strategy_id: trend_ma_cross_1
+family: trend_following
+asset_universe: [BTCUSDT, ETHUSDT]
+timeframe: 1h
+indicators: {ma_fast: 20, ma_slow: 100}
+entry_rules: ["ma_fast > ma_slow"]
+exit_rules: ["ma_fast < ma_slow"]
+risk_rules: {stop_loss_pct: 0.03, take_profit_pct: 0.08}
+parameter_ranges: {ma_fast: [10, 20, 30], ma_slow: [80, 100, 120]}
+notes: long-only trend

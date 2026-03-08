@@ -1,0 +1,10 @@
+strategy_id: pairs_l1_alt_2
+family: pairs
+asset_universe: [ETHUSDT, SOLUSDT]
+timeframe: 1h
+indicators: {hedge_ratio_window: 120}
+entry_rules: ["residual_z < -1.8"]
+exit_rules: ["residual_z > -0.3"]
+risk_rules: {stop_loss_pct: 0.03, dollar_neutral: true}
+parameter_ranges: {window: [60, 120, 180], z_entry: [-1.5, -1.8, -2.2]}
+notes: alt relative value

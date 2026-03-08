@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Quant Box Dashboard - Overview</title>
+    <style>
+      body { font-family: Arial; margin: 2rem; background: #f6f8fb; }
+      nav a { margin-right: 1rem; }
+      .card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+      .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Overview</h1>
+    <nav>
+      <a href="/dashboard/overview">Overview</a>
+      <a href="/dashboard/strategy-library">Strategy Library</a>
+      <a href="/dashboard/backtest-runs">Backtest Runs</a>
+      <a href="/dashboard/rankings">Rankings</a>
+      <a href="/dashboard/paper-trading">Paper Trading</a>
+      <a href="/dashboard/risk-monitor">Risk Monitor</a>
+      <a href="/dashboard/system-health">System Health</a>
+    </nav>
+    <div class="grid">
+      <div class="card"><h3>Total Strategies</h3><p>GET /strategies</p></div>
+      <div class="card"><h3>Promoted Strategies</h3><p>GET /promotions</p></div>
+      <div class="card"><h3>Paper PnL</h3><p>GET /paper/pnl</p></div>
+      <div class="card"><h3>Current Drawdown</h3><p>GET /risk/state</p></div>
+      <div class="card"><h3>System Health</h3><p>GET /health</p></div>
+      <div class="card"><h3>System Metrics</h3><p>GET /metrics</p></div>
+    </div>
+  </body>
+</html>

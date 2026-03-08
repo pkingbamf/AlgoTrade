@@ -1,0 +1,10 @@
+strategy_id: meanrev_zscore_2
+family: mean_reversion
+asset_universe: [BTCUSDT]
+timeframe: 15min
+indicators: {zscore: 30}
+entry_rules: ["zscore < -2"]
+exit_rules: ["zscore > -0.2"]
+risk_rules: {stop_loss_pct: 0.01, max_hold_bars: 24}
+parameter_ranges: {z_entry: [-1.5, -2.0, -2.5], lookback: [20, 30, 40]}
+notes: intraday stat reversion

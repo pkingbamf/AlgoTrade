@@ -1,0 +1,10 @@
+strategy_id: meanrev_rsi_1
+family: mean_reversion
+asset_universe: [ETHUSDT, SOLUSDT]
+timeframe: 1h
+indicators: {rsi: 14, bbands: 20}
+entry_rules: ["rsi < 30", "close < lower_band"]
+exit_rules: ["rsi > 50"]
+risk_rules: {stop_loss_pct: 0.025, take_profit_pct: 0.04}
+parameter_ranges: {rsi_low: [20, 25, 30], bb_window: [14, 20, 30]}
+notes: short horizon pullback
