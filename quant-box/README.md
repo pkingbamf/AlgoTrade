@@ -140,3 +140,14 @@ GitHub Actions workflow is provided at `../.github/workflows/ci.yml` and runs:
 - dependency install (`pip install -e .[dev]`)
 - `pytest -q`
 - `python -m compileall app monitoring risk backtests tests`
+
+
+## Developer commands
+From repo root:
+
+```bash
+make install
+make test-targeted
+make compile
+make smoke
+```

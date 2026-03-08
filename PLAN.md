@@ -178,3 +178,19 @@ Tasks:
 
 Deliverables:
 - Reliable system
+
+
+---
+
+# Phase 10 — Release Readiness
+
+Goal: Improve developer operations and deployment readiness after MVP.
+
+Tasks:
+- [x] Standardized developer commands
+- [x] Smoke validation script
+- [x] CI alignment check
+
+Deliverables:
+- Repeatable local workflow
+- Quick sanity validation before release

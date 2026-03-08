@@ -1,73 +1,41 @@
 # Project Status
 
 ## Current Phase
-Phase 9 — Testing & Hardening (Complete)
+Phase 10 — Release Readiness (Complete)
 
 ---
 
 # Completed
 
-## Phase 1 — Foundation
-Completed:
-- repo scaffold, Docker, env config, DB base models, logging
+All phases 1-9 from MVP roadmap are complete.
 
-## Phase 2 — Research Engine
+## Phase 10 — Release Readiness
 Completed:
-- ingestion, validation, spec schema, sweep engine, experiment persistence
-
-## Phase 3 — Backtesting & Validation
-Completed:
-- backtesting metrics, walk-forward, Monte Carlo, sensitivity, reports
-
-## Phase 4 — Paper Trading System
-Completed:
-- paper execution, deployment registry, audit logging, reconciliation
-
-## Phase 5 — Risk Management
-Completed:
-- hard pre-trade limits, kill-switch/disable controls, volatility size reduction
-
-## Phase 6 — Monitoring & Observability
-Completed:
-- health metadata, system metrics, stale-data detection, job tracking, alert hooks
-
-## Phase 7 — API
-Completed:
-- complete REST surface for strategy/backtest/rankings/paper/risk/metrics/health
-
-## Phase 8 — Dashboard
-Completed:
-- seven dashboard pages with route wiring and navigation
-
-## Phase 9 — Testing & Hardening
-Completed:
-- expanded unit tests across monitoring/risk/broker/contracts/invariants
-- integration-style flow tests (risk + broker path)
-- backtest correctness invariants for stability metrics
-- API route contract test coverage
-- CI workflow (`.github/workflows/ci.yml`) for install + pytest + compile checks
+- top-level `Makefile` with standardized install/test/compile/smoke targets
+- smoke validation script (`quant-box/scripts/smoke_validate.py`)
+- smoke test coverage (`quant-box/tests/test_smoke_validate.py`)
 
 ---
 
 # Current Work
 
-Roadmap phases complete for MVP baseline.
+Release readiness validation and closeout.
 
 ---
 
 # Decisions
 
-- retain lightweight tests runnable without heavy external deps where possible
-- rely on CI to run full dependency-backed test suite
+- keep closeout tooling lightweight and dependency-minimal
+- provide one-command local sanity check path via `make smoke`
 
 ---
 
 # Known Issues
 
-- Local minimal runner may not have runtime dependencies for full `pytest` execution.
+- Full suite still depends on runtime libraries unavailable in minimal runner environments.
 
 ---
 
 # Next Phase
 
-Post-MVP enhancements / optional live-trading phase only if explicitly requested.
+Backlog-driven enhancements (only as requested).
