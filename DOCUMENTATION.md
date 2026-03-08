@@ -1,7 +1,7 @@
 # Project Status
 
 ## Current Phase
-Phase 8 — Dashboard (Complete)
+Phase 9 — Testing & Hardening (Complete)
 
 ---
 
@@ -25,7 +25,7 @@ Completed:
 
 ## Phase 5 — Risk Management
 Completed:
-- hard pre-trade limits, kill-switch and strategy disable controls, vol sizing reduction
+- hard pre-trade limits, kill-switch/disable controls, volatility size reduction
 
 ## Phase 6 — Monitoring & Observability
 Completed:
@@ -33,39 +33,41 @@ Completed:
 
 ## Phase 7 — API
 Completed:
-- full REST coverage for strategy, backtest, ranking, promotions, paper, risk, metrics, and health
+- complete REST surface for strategy/backtest/rankings/paper/risk/metrics/health
 
 ## Phase 8 — Dashboard
 Completed:
-- overview page (`/dashboard/overview`)
-- strategy library page (`/dashboard/strategy-library`)
-- backtest viewer page (`/dashboard/backtest-runs`)
-- rankings page (`/dashboard/rankings`)
-- paper trading monitor page (`/dashboard/paper-trading`)
-- risk monitor page (`/dashboard/risk-monitor`)
-- system health page (`/dashboard/system-health`)
+- seven dashboard pages with route wiring and navigation
+
+## Phase 9 — Testing & Hardening
+Completed:
+- expanded unit tests across monitoring/risk/broker/contracts/invariants
+- integration-style flow tests (risk + broker path)
+- backtest correctness invariants for stability metrics
+- API route contract test coverage
+- CI workflow (`.github/workflows/ci.yml`) for install + pytest + compile checks
 
 ---
 
 # Current Work
 
-Phase 8 validation complete; preparing for Phase 9 testing and hardening.
+Roadmap phases complete for MVP baseline.
 
 ---
 
 # Decisions
 
-- dashboard remains lightweight server-rendered HTML for MVP velocity
-- pages link directly to operational API endpoints to keep UX simple and transparent
+- retain lightweight tests runnable without heavy external deps where possible
+- rely on CI to run full dependency-backed test suite
 
 ---
 
 # Known Issues
 
-- Full pytest still depends on runtime libraries unavailable in minimal runner environments.
+- Local minimal runner may not have runtime dependencies for full `pytest` execution.
 
 ---
 
 # Next Phase
 
-Phase 9 — Testing & Hardening
+Post-MVP enhancements / optional live-trading phase only if explicitly requested.

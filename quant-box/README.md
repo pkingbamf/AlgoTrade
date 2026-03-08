@@ -133,3 +133,10 @@ pytest -q
 - `/dashboard/paper-trading`
 - `/dashboard/risk-monitor`
 - `/dashboard/system-health`
+
+
+## CI
+GitHub Actions workflow is provided at `../.github/workflows/ci.yml` and runs:
+- dependency install (`pip install -e .[dev]`)
+- `pytest -q`
+- `python -m compileall app monitoring risk backtests tests`

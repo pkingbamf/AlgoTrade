@@ -169,12 +169,12 @@ Deliverables:
 Goal: Production readiness.
 
 Tasks:
-- [ ] Unit tests
-- [ ] Integration tests
-- [ ] Backtest correctness tests
-- [ ] Risk enforcement tests
-- [ ] API endpoint tests
-- [ ] CI/CD pipeline
+- [x] Unit tests
+- [x] Integration tests
+- [x] Backtest correctness tests
+- [x] Risk enforcement tests
+- [x] API endpoint tests
+- [x] CI/CD pipeline
 
 Deliverables:
 - Reliable system
